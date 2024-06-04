@@ -31,3 +31,22 @@ def get_vacancies_for_company(company_id):
     }
     response = requests.get(url, headers=user_agent, params=params)
     return response.json()
+
+
+def create_tables(cur):
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS companies(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    hh_id INT UNIQUE NOT NULL 
+    );
+    CREATE TABLE IF NOT EXISTS vacancies(
+    id SERIAL PRIMARY KEY,
+    title varchar NOT NULL,
+    salary_from INT,
+    salary_to INT,
+    url TEXT NOT NULL,
+    company_id INT REFERENCES companies(id)
+    );
+    
+    """)
