@@ -50,3 +50,29 @@ def create_tables(cur):
     );
     
     """)
+
+def main():
+    # Подключение к базе данных
+    conn = psycopg2.connect(db_name=DB_NAME, user=DB_USER, password=DB_PASSWORD, host=DB_HOST)
+    cur = conn.cursor()
+
+    # Создание таблиц
+    create_tables(cur)
+
+    # Обработка данных для каждой компании
+    for company_id in COMPANIES:
+        vacancies_data = get_vacancies_for_company(company_id)
+        # Получение информации о компании
+        company_info = requests.get(f'https://api.hh.ru/employers/{company_id}').json()
+        company_name = company_info['name']
+        # Вставка информации о компании
+        cur.execute("""
+            INSERT INTO companies (name, hh_id)
+            VALUES (%s,%s);
+        """, (company_name, company_id))
+        # Получение ID компании в базе данных
+        cur.execute("SELECT id FROM companies WHERE hh_id=%s;", (company_id))
+        company_db_id = cur.fetchone()[0]
+        # Вставка данных о вакансиях
+
+
