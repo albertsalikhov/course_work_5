@@ -92,3 +92,5 @@ def main():
     cur.close()
     conn.close()
 
+if __name__ == '__main__':
+    main()
