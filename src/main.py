@@ -71,8 +71,24 @@ def main():
             VALUES (%s,%s);
         """, (company_name, company_id))
         # Получение ID компании в базе данных
-        cur.execute("SELECT id FROM companies WHERE hh_id=%s;", (company_id))
+        cur.execute("SELECT id FROM companies WHERE hh_id=%s;", (company_id,))
         company_db_id = cur.fetchone()[0]
         # Вставка данных о вакансиях
+        for item in vacancies_data['items']:
+            title = item['name']
+            salary_from = item['salary']['from'] if item['salary'] else None
+            salary_to = item['salary']['to'] if item['salary'] else None
+            url = item['alternate_url']
 
+            cur.execute("""
+                INSERT INTO vacancies (title, salary_from, salary_to, url, company_id)
+                VALUES(%s, %s, %s, %s, %s);
+            """, (title, salary_from, salary_to, url, company_db_id))
+
+    # Сохранение изменений в базе данных
+    conn.commit()
+
+    # Закрытие курсора и подключения
+    cur.close()
+    conn.close()
 
