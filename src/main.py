@@ -106,5 +106,8 @@ def main():
     print("\nСредняя зарплата:")
     print(db_manager.get_avg_salary())
 
+    print("\nВакансии с зарплатой выше средней:")
+    print(db_manager.get_vacancies_with_higher_salary())
+
 if __name__ == '__main__':
     main()

@@ -48,3 +48,16 @@ class DBManager:
             """, (avg_salary,))
             return cur.fetchall()
 
+    def get_vacancies_with_keyword(self, keyword):
+        """Получаем вакансии по ключевому слову"""
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                SELECT c.name, v.title, v.salary_from, v.salary_to, v.url
+                FROM vacancies v
+                JOIN companies c ON v.company_id = c.id
+            """, (f'{keyword}'))
+            return cur.fetchall()
+
+    def close_self(self):
+        self.conn.close()
+
