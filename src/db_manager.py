@@ -33,9 +33,9 @@ class DBManager:
             cur.execute("""
                 SELECT AVG((salary_from+salary_to)/2)
                 FROM vacancies 
-                WHERE salary_from NOT NULL and salary_to NOT NULL
+                WHERE salary_from IS NOT NULL and salary_to IS NOT NULL
             """)
-            return cur.fetchall()[0]
+            return cur.fetchone()[0]
 
     def get_vacancies_with_higher_salary(self):
         """Получаем вакансии с зарплатой выше среднего"""
@@ -45,6 +45,7 @@ class DBManager:
                 SELECT c.name, v.title, v.salary_from, v.salary_to, v.url
                 FROM vacancies v
                 JOIN companies c ON v.company_id = c.id
+                WHERE (v.salary_from + v.salary_to)/2 > %s
             """, (avg_salary,))
             return cur.fetchall()
 
@@ -55,9 +56,10 @@ class DBManager:
                 SELECT c.name, v.title, v.salary_from, v.salary_to, v.url
                 FROM vacancies v
                 JOIN companies c ON v.company_id = c.id
-            """, (f'{keyword}'))
+                WHERE v.title LIKE %s;
+            """, (f'%{keyword}%',))
             return cur.fetchall()
 
-    def close_self(self):
+    def close(self):
         self.conn.close()
 

@@ -24,7 +24,7 @@ COMPANIES = [
 
 def get_vacancies_for_company(company_id):
     url = 'https://api.hh.ru/vacancies'
-    user_agent = {'User-Agent': 'HH-User-agent'}
+    user_agent = {'User-Agent': 'HH-User-Agent'}
     params = {
         'employer_id': company_id,
         'per_page': 100
@@ -35,20 +35,20 @@ def get_vacancies_for_company(company_id):
 
 def create_tables(cur):
     cur.execute("""
-    CREATE TABLE IF NOT EXISTS companies(
-    id SERIAL PRIMARY KEY,
-    name VARCHAR NOT NULL,
-    hh_id INT UNIQUE NOT NULL 
-    );
-    CREATE TABLE IF NOT EXISTS vacancies(
-    id SERIAL PRIMARY KEY,
-    title varchar NOT NULL,
-    salary_from INT,
-    salary_to INT,
-    url TEXT NOT NULL,
-    company_id INT REFERENCES companies(id)
-    );
-    
+        CREATE TABLE IF NOT EXISTS companies (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                hh_id INT UNIQUE NOT NULL
+            );
+
+        CREATE TABLE IF NOT EXISTS vacancies (
+            id SERIAL PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            salary_from INT,
+            salary_to INT,
+            url TEXT NOT NULL,
+            company_id INT REFERENCES companies(id)
+        );
     """)
 
 
@@ -77,7 +77,6 @@ def main():
         company_db_id = cur.fetchone()[0]
         # Вставка данных о вакансиях
         for item in vacancies_data['items']:
-            print(vacancies_data['items'])
             title = item['name']
             salary_from = item['salary']['from'] if item['salary'] else None
             salary_to = item['salary']['to'] if item['salary'] else None
@@ -99,7 +98,7 @@ def main():
 
     print("Компании и количество вакансий:")
     print(db_manager.get_companies_and_vacancies_count())
-
+    #
     print("\nВсе вакансии:")
     print(db_manager.get_all_vacancies())
 
@@ -108,6 +107,11 @@ def main():
 
     print("\nВакансии с зарплатой выше средней:")
     print(db_manager.get_vacancies_with_higher_salary())
+
+    print("\nВакансии с ключевым словом 'Python':")
+    print(db_manager.get_vacancies_with_keyword('Python'))
+
+    db_manager.close()
 
 if __name__ == '__main__':
     main()
