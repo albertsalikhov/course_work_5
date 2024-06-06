@@ -18,6 +18,7 @@ class DBManager:
 
 
     def get_all_vacancies(self):
+        """Получаем все вакансии"""
         with self.conn.cursor() as cur:
             cur.execute("""
                 SELECT c.name, v.title, v.salary_from, v.salary_to, v.url
@@ -25,3 +26,25 @@ class DBManager:
                 JOIN companies c ON v.company_id = c.id
             """)
             return cur.fetchall()
+
+    def get_avg_salary(self):
+        """Вычисляем среднюю зарплату в базе данных"""
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                SELECT AVG((salary_from+salary_to)/2)
+                FROM vacancies 
+                WHERE salary_from NOT NULL and salary_to NOT NULL
+            """)
+            return cur.fetchall()[0]
+
+    def get_vacancies_with_higher_salary(self):
+        """Получаем вакансии с зарплатой выше среднего"""
+        avg_salary = self.get_avg_salary()
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                SELECT c.name, v.title, v.salary_from, v.salary_to, v.url
+                FROM vacancies v
+                JOIN companies c ON v.company_id = c.id
+            """, (avg_salary,))
+            return cur.fetchall()
+

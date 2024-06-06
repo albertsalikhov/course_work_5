@@ -94,6 +94,17 @@ def main():
     # Закрытие курсора и подключения
     cur.close()
     conn.close()
+    # Работа с классом DBManager
+    db_manager = DBManager(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST)
+
+    print("Компании и количество вакансий:")
+    print(db_manager.get_companies_and_vacancies_count())
+
+    print("\nВсе вакансии:")
+    print(db_manager.get_all_vacancies())
+
+    print("\nСредняя зарплата:")
+    print(db_manager.get_avg_salary())
 
 if __name__ == '__main__':
     main()
