@@ -51,9 +51,10 @@ def create_tables(cur):
     
     """)
 
+
 def main():
     # Подключение к базе данных
-    conn = psycopg2.connect(db_name=DB_NAME, user=DB_USER, password=DB_PASSWORD, host=DB_HOST)
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD, host=DB_HOST)
     cur = conn.cursor()
 
     # Создание таблиц
@@ -68,13 +69,15 @@ def main():
         # Вставка информации о компании
         cur.execute("""
             INSERT INTO companies (name, hh_id)
-            VALUES (%s,%s);
+            VALUES (%s,%s)
+            ON CONFLICT (hh_id) DO NOTHING;
         """, (company_name, company_id))
         # Получение ID компании в базе данных
         cur.execute("SELECT id FROM companies WHERE hh_id=%s;", (company_id,))
         company_db_id = cur.fetchone()[0]
         # Вставка данных о вакансиях
         for item in vacancies_data['items']:
+            print(vacancies_data['items'])
             title = item['name']
             salary_from = item['salary']['from'] if item['salary'] else None
             salary_to = item['salary']['to'] if item['salary'] else None
